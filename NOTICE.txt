@@ -1,0 +1,17 @@
+
+Lists of 15 third-party dependencies.
+     (The Apache Software License, Version 2.0) Jackson-annotations (com.fasterxml.jackson.core:jackson-annotations:2.14.2 - https://github.com/FasterXML/jackson)
+     (The Apache Software License, Version 2.0) Jackson-core (com.fasterxml.jackson.core:jackson-core:2.14.2 - https://github.com/FasterXML/jackson-core)
+     (The Apache Software License, Version 2.0) jackson-databind (com.fasterxml.jackson.core:jackson-databind:2.14.2 - https://github.com/FasterXML/jackson)
+     (BSD 2-Clause License) zstd-jni (com.github.luben:zstd-jni:1.4.9-1 - https://github.com/luben/zstd-jni)
+     (Apache License, Version 2.0) Apache Commons Codec (commons-codec:commons-codec:1.11 - http://commons.apache.org/proper/commons-codec/)
+     (The Apache Software License, Version 2.0) Apache Commons Logging (commons-logging:commons-logging:1.2 - http://commons.apache.org/proper/commons-logging/)
+     (Apache 2.0) HTTP Sink Connector for Kafka Connect (io.axual.connect.plugins.http:http-sink-connector:1.0.2 - https://axual.com/)
+     (EPL 2.0) (GPL2 w/ CPE) javax.ws.rs-api (javax.ws.rs:javax.ws.rs-api:2.1.1 - https://github.com/eclipse-ee4j/jaxrs-api)
+     (Apache License, Version 2.0) Apache HttpClient (org.apache.httpcomponents:httpclient:4.5.14 - http://hc.apache.org/httpcomponents-client-ga)
+     (Apache License, Version 2.0) Apache HttpCore (org.apache.httpcomponents:httpcore:4.4.16 - http://hc.apache.org/httpcomponents-core-ga)
+     (The Apache Software License, Version 2.0) Apache Kafka (org.apache.kafka:connect-api:2.8.2 - https://kafka.apache.org)
+     (The Apache Software License, Version 2.0) Apache Kafka (org.apache.kafka:kafka-clients:2.8.2 - https://kafka.apache.org)
+     (The Apache Software License, Version 2.0) LZ4 and xxHash (org.lz4:lz4-java:1.7.1 - https://github.com/lz4/lz4-java)
+     (MIT License) SLF4J API Module (org.slf4j:slf4j-api:1.7.30 - http://www.slf4j.org)
+     (Apache-2.0) snappy-java (org.xerial.snappy:snappy-java:1.1.8.1 - https://github.com/xerial/snappy-java)

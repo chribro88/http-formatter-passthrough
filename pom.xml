@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.axual.connect.plugins.http.formatter</groupId>
+  <artifactId>http-formatter-passthrough</artifactId>
+  <version>1.0.0</version>
+  <name>Message Formatter for Axual HTTP Sink Connector</name>
+  <description>Format the payload of the Kafka message
+  </description>
+
+  <licenses>
+    <license>
+      <name>Apache 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>Axual B.V.</name>
+    <url>https://axual.io/</url>
+  </organization>
+  <url>https://axual.com/</url>
+
+  <inceptionYear>2020</inceptionYear>
+
+  <developers>
+    <developer>
+      <name>Team Altair</name>
+      <email>altair@axual.com</email>
+      <organization>Axual B.V.</organization>
+      <organizationUrl>https://axual.com</organizationUrl>
+    </developer>
+  </developers>
+
+
+  <!-- <scm>
+    <developerConnection>
+      scm:git:ssh://git@gitlab.com:axual-public/connect-plugins/http-formatter-passthrough.git
+    </developerConnection>
+    <connection>scm:git:ssh://git@gitlab.com:axual-public/connect-plugins/http-formatter-passthrough.git
+    </connection>
+    <url>scm:git:ssh://git@gitlab.com:axual-public/connect-plugins/http-formatter-passthrough.git</url>
+    <tag>HEAD</tag>
+  </scm> -->
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <!--suppress UnresolvedMavenProperty -->
+      <url>${axual.maven.repository.url.snapshots}</url>
+    </snapshotRepository>
+    <repository>
+      <id>releases</id>
+      <!--suppress UnresolvedMavenProperty -->
+      <url>${axual.maven.repository.url.releases}</url>
+    </repository>
+  </distributionManagement>
+
+  <properties>
+    <!-- Connector dependency versions -->
+    <kafka.connect.version>2.8.2</kafka.connect.version>
+    <httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
+    <jackson.databind.version>2.14.2</jackson.databind.version>
+
+    <!-- Build plugin dependency versions -->
+    <maven.clean.plugin.version>3.2.0</maven.clean.plugin.version>
+    <maven.resources.plugin.version>3.3.0</maven.resources.plugin.version>
+    <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+    <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
+    <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
+    <maven.source.plugin.version>3.2.1</maven.source.plugin.version>
+    <maven.install.plugin.version>3.1.0</maven.install.plugin.version>
+    <maven.deploy.plugin.version>3.1.0</maven.deploy.plugin.version>
+    <maven.dependency.plugin.version>3.1.2</maven.dependency.plugin.version>
+    <maven.assembly.plugin.version>3.5.0</maven.assembly.plugin.version>
+    <maven.license.plugin.version>1.20</maven.license.plugin.version>
+
+    <!-- Testing and test reporting settings -->
+    <guava.version>31.1-jre</guava.version>
+    <junit.jupiter.version>5.9.2</junit.jupiter.version>
+    <mockito.version>5.2.0</mockito.version>
+    <wiremock.version>2.27.2</wiremock.version>
+    <slf4j-simple.version>1.7.36</slf4j-simple.version>
+    <maven.surefire.plugin.version>3.0.0</maven.surefire.plugin.version>
+    <maven.failsafe.plugin.version>3.0.0</maven.failsafe.plugin.version>
+    <maven.jacoco.plugin.version>0.8.8</maven.jacoco.plugin.version>
+
+    <maven.failsafe.surefire.reports>${project.build.directory}/surefire-reports
+    </maven.failsafe.surefire.reports>
+    <skipITs>false</skipITs>
+    <skipUTs>false</skipUTs>
+    <skipTests>false</skipTests>
+    <failsafeArgLine></failsafeArgLine>
+    <surefireArgLine></surefireArgLine>
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
+
+    <!-- Signing and stagin plugin properties -->
+    <nexus.staging.plugin.version>1.6.13</nexus.staging.plugin.version>
+    <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
+    <staging.progress.timeout.minutes>30</staging.progress.timeout.minutes>
+
+    <!-- Project properties -->
+    <java.source.version>1.8</java.source.version>
+    <java.target.version>1.8</java.target.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- License properties -->
+    <license.licenseName>apache_v2</license.licenseName>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>connect-api</artifactId>
+      <version>${kafka.connect.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpcomponents.httpclient.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.databind.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.axual.connect.plugins.http</groupId>
+      <artifactId>http-sink-connector</artifactId>
+      <version>1.0.2</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Testing dependencies -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j-simple.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock</artifactId>
+      <version>${wiremock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/http-formatter-passthrough.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <excludes>
+          <exclude>**/http-formatter-passthrough.properties</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <!-- clean plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>${maven.clean.plugin.version}</version>
+      </plugin>
+      <!-- resources plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>${maven.resources.plugin.version}</version>
+      </plugin>
+      <!-- compiler plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+        <configuration>
+          <source>${java.source.version}</source>
+          <target>${java.target.version}</target>
+        </configuration>
+      </plugin>
+      <!-- jar plugin -->
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven.jar.plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Created-By>${java.vm.name} ${java.version} (${java.vm.vendor})
+              </Created-By>
+              <Implementation-Vendor-ArtifactId>${project.artifactId}
+              </Implementation-Vendor-ArtifactId>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven.javadoc.plugin.version}</version>
+        <configuration>
+          <source>${java.source.version}</source>
+          <additionalJOption>--no-module-directories</additionalJOption>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- source plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven.source.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true
+              </addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Created-By>${java.vm.name} ${java.version} (${java.vm.vendor})
+              </Created-By>
+              <Implementation-Vendor-ArtifactId>${project.artifactId}
+              </Implementation-Vendor-ArtifactId>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <!-- install plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>${maven.install.plugin.version}</version>
+      </plugin>
+      <!-- deploy plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>${maven.deploy.plugin.version}</version>
+      </plugin>
+      <!-- dependency plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven.dependency.plugin.version}</version>
+      </plugin>
+
+      <!-- assembly plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>${maven.assembly.plugin.version}</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>
+              jar-with-dependencies
+            </descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+          <appendAssemblyId>true</appendAssemblyId>
+        </configuration>
+        <executions>
+          <execution>
+            <id>assembly-jar-Id</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- license plugin -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${maven.license.plugin.version}</version>
+        <configuration>
+          <licenseName>${license.licenseName}</licenseName>
+          <verbose>false</verbose>
+          <processStartTag>
+            ========================LICENSE_START=================================
+          </processStartTag>
+          <processEndTag>
+            =========================LICENSE_END==================================
+          </processEndTag>
+          <includes>
+            <includes>**/*.java</includes>
+          </includes>
+          <skipUpdateLicense>false</skipUpdateLicense>
+          <failOnMissingHeader>true</failOnMissingHeader>
+        </configuration>
+        <executions>
+          <execution>
+            <id>add-third-party-license</id>
+            <goals>
+              <goal>add-third-party</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <outputDirectory>${project.basedir}</outputDirectory>
+              <thirdPartyFilename>NOTICE.txt</thirdPartyFilename>
+              <excludedScopes>system,test</excludedScopes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>verify-license-headers</id>
+            <goals>
+              <goal>check-file-header</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+          <execution>
+            <id>generate-license-headers</id>
+            <goals>
+              <goal>update-file-header</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- failsafe plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven.failsafe.plugin.version}</version>
+        <configuration>
+          <skip>${skipTests}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <argLine>${failsafeArgLine} -DskipUTs</argLine>
+              <skipTests>${skipITs}</skipTests>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- surefire plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven.surefire.plugin.version}</version>
+        <configuration>
+          <argLine>${surefireArgLine}</argLine>
+          <skipTests>${skipUTs}</skipTests>
+          <skip>${skipTests}</skip>
+          <includes>
+            <include>**/Test*.java</include>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+            <include>**/*TestCase.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/IT*.java</exclude>
+            <exclude>**/*IT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <!-- jacoco plugin -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${maven.jacoco.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>jacoco-initialize</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <phase>test-compile</phase>
+          </execution>
+          <execution>
+            <id>jacoco-site</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Nexus Staging Plugin -->
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>${nexus.staging.plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>releases</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+          <stagingProgressTimeoutMinutes>${staging.progress.timeout.minutes}
+          </stagingProgressTimeoutMinutes>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>sign-artifacts</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven.gpg.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

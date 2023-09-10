@@ -47,9 +47,13 @@ public class PassthroughJsonValueFormatter extends JsonEnvelopeMessageFormatter 
 
     public PassthroughJsonValueFormatter(ObjectMapper objectMapper, JsonNodeFactory jsonNodeFactory) {
         super(objectMapper, jsonNodeFactory);
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
     }
 
+    public PassthroughJsonValueFormatter() {
+      this.objectMapper = new ObjectMapper();
+    }
+  
     @Override
     public StringEntity createJsonMessage(SinkRecord record, ContentType contentType) {
         LOG.debug("Creating JSON Message");

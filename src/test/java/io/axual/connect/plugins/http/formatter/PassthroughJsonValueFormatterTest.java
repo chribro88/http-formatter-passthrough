@@ -1,5 +1,7 @@
 package io.axual.connect.plugins.http.formatter;
 
+import org.junit.jupiter.api.Test;
+
 public class PassthroughJsonValueFormatterTest {
    
     @Test

@@ -51,7 +51,7 @@ public class PassthroughJsonValueFormatter extends JsonEnvelopeMessageFormatter 
     }
 
     public PassthroughJsonValueFormatter() {
-      this(new ObjectMapper(), JsonNodeFactory.instance);
+        this(new ObjectMapper(), JsonNodeFactory.instance);
     }
   
     @Override

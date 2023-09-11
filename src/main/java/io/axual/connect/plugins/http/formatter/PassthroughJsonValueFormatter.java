@@ -43,11 +43,11 @@ import org.slf4j.LoggerFactory;
 public class PassthroughJsonValueFormatter extends JsonEnvelopeMessageFormatter {
     private static final Logger LOG = LoggerFactory.getLogger(JsonEnvelopeMessageFormatter.class);
 
-    private final ObjectMapper objectMapper;
+    // private final ObjectMapper objectMapper;
 
     public PassthroughJsonValueFormatter(ObjectMapper objectMapper, JsonNodeFactory jsonNodeFactory) {
         super(objectMapper, jsonNodeFactory);
-        this.objectMapper = objectMapper;
+        // this.objectMapper = objectMapper;
     }
 
     public PassthroughJsonValueFormatter() {
@@ -58,10 +58,11 @@ public class PassthroughJsonValueFormatter extends JsonEnvelopeMessageFormatter 
     public StringEntity createJsonMessage(SinkRecord record, ContentType contentType) {
         LOG.debug("Creating JSON Message");
         try {
-          String message = objectMapper.writeValueAsString(createNode(record.valueSchema(), record.value()));
-          return new StringEntity(message, contentType);
-        } catch (JsonProcessingException e) {
+          // String message = objectMapper.writeValueAsString(createNode(record.valueSchema(), record.value()));
+          return new StringEntity(record.value().toString(), contentType);
+        } catch (DataException e) {
           throw new MessageFormattingException("Could not serialize message", e);
         }
       }
+}
 }

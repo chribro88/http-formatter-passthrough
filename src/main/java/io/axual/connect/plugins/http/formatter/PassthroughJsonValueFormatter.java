@@ -20,7 +20,7 @@ package io.axual.connect.plugins.http.formatter;
  * =========================LICENSE_END==================================
  */
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.kafka.connect.errors.DataException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.axual.connect.plugins.http.exceptions.MessageFormattingException;
